@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIST CSF 2.0 Audit Tool Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .progress-bar { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); width: var(--progress-width, 0%); }
+        /* Đổi màu chủ đạo sang Xanh Dương (Blue) đặc trưng của NIST để phân biệt với tool ISO (Xanh lá) */
+        #sectionList button.active { background-color: #2563eb; color: white; font-weight: 600; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        #evidenceList::-webkit-scrollbar { width: 6px; }
+        #evidenceList::-webkit-scrollbar-thumb { background-color: #bfdbfe; border-radius: 999px; }
+        #evidenceList::-webkit-scrollbar-thumb:hover { background-color: #3b82f6; }
+        .btn-hover-effect:hover { transform: translateY(-1px); }
+        .btn-hover-effect:active { transform: translateY(0px); }
+        /* Custom màu cho file upload NIST */
+        input[type="file"]::file-selector-button { margin-right: 1rem; padding: 0.5rem 1rem; border-radius: 9999px; border: 0; font-size: 0.875rem; font-weight: 600; background-color: #eff6ff; color: #1d4ed8; cursor: pointer; transition: background-color 0.2s; }
+        input[type="file"]::file-selector-button:hover { background-color: #dbeafe; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="screen-setup" class="screen active max-w-2xl mx-auto p-10 bg-white shadow-2xl rounded-2xl mt-20 border border-blue-100">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">NIST CSF 2.0 <span class="text-blue-600">Master Audit</span></h1>
+            <p class="text-slate-500 mt-2 text-lg">Công cụ đánh giá An ninh mạng theo khung NIST 2.0 mới nhất.</p>
+        </div>
+        <div class="space-y-6">
+            <div>
+                <label for="clientName" class="block text-sm font-bold text-slate-700 mb-2 uppercase">Tên Khách hàng / Tổ chức</label>
+                <input type="text" id="clientName" class="block w-full p-4 border-2 border-slate-200 rounded-xl text-lg focus:border-blue-500 focus:outline-none transition-colors" placeholder="Ví dụ: Ngân hàng ABC, Fintech XYZ...">
+            </div>
+            <button id="startButton" class="btn-hover-effect w-full bg-blue-600 text-white py-4 rounded-xl text-xl font-bold hover:bg-blue-700 transition shadow-lg">
+                Bắt đầu Đánh giá NIST
+            </button>
+        </div>
+    </div>
+
+    <div id="screen-audit" class="screen max-w-[95rem] mx-auto p-6 mt-6">
+        <div class="flex flex-col lg:flex-row gap-8 h-[calc(100vh-6rem)]">
+            <nav class="w-full lg:w-1/4 xl:w-1/5 bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-200 flex flex-col">
+                <div class="p-5 bg-slate-50 border-b border-slate-200">
+                    <h2 class="text-lg font-extrabold text-blue-700 uppercase">Chức năng (Functions)</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto p-3"><ul id="sectionList" class="space-y-1.5"></ul></div>
+            </nav>
+
+            <div class="flex-1 flex flex-col gap-6 overflow-hidden">
+                <div class="bg-white p-6 shadow-md rounded-2xl border border-slate-200 flex-shrink-0">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <div class="text-sm font-semibold text-slate-400 uppercase">Đang đánh giá</div>
+                            <h1 class="text-3xl font-bold text-slate-800 truncate" id="clientNameDisplay"></h1>
+                        </div>
+                         <button id="saveReportButton" class="btn-hover-effect bg-slate-800 text-white py-3 px-6 rounded-xl font-bold hover:bg-slate-900 transition shadow-md flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            Xuất Báo cáo NIST
+                        </button>
+                    </div>
+                    <div class="bg-slate-100 p-4 rounded-xl">
+                        <div class="flex justify-between text-sm font-bold text-slate-600 mb-2">
+                            <span>Tiến độ hoàn thành</span><span id="progressText" class="text-blue-700">0/0</span>
+                        </div>
+                        <div class="w-full bg-slate-300 rounded-full h-4 overflow-hidden">
+                            <div id="progressBar" class="progress-bar bg-gradient-to-r from-blue-600 to-blue-400 h-full rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 bg-white p-8 shadow-xl rounded-2xl border border-slate-200 overflow-y-auto flex flex-col">
+                    <div class="flex-1">
+                         <div class="mb-8">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="px-4 py-1.5 bg-blue-100 text-blue-800 text-xs font-bold uppercase rounded-full" id="controlSection"></span>
+                                <span class="font-mono text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-md border" id="controlId"></span>
+                            </div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 leading-tight" id="controlQuestion"></h2>
+                             <div id="explanationArea" class="mt-5">
+                                <details class="group border border-slate-200 rounded-xl overflow-hidden transition-all open:bg-blue-50/50">
+                                    <summary class="flex cursor-pointer items-center justify-between p-3 bg-slate-50 hover:bg-slate-100 transition">
+                                        <span class="text-sm font-semibold text-blue-700 flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            Hướng dẫn & Gợi ý bằng chứng (NIST)
+                                        </span>
+                                        <span class="transition group-open:rotate-180"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></span>
+                                    </summary>
+                                    <div id="explanationContent" class="p-5 text-sm text-slate-700 leading-relaxed border-t border-slate-200"></div>
+                                </details>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+                            <div class="xl:col-span-5 space-y-8">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-3 uppercase">Mức độ Đáp ứng (Tier)</label>
+                                     <select id="controlStatus" class="block w-full p-3.5 border-2 border-slate-300 rounded-xl focus:border-blue-500 bg-white font-medium shadow-sm">
+                                        <option value="Bỏ qua" class="text-slate-400">(Chưa đánh giá)</option>
+                                        <option value="Đáp ứng hoàn toàn" class="text-blue-600 font-bold">✓ Đáp ứng hoàn toàn (Implemented)</option>
+                                        <option value="Đáp ứng một phần" class="text-amber-600 font-bold">⚠ Đáp ứng một phần (Partial)</option>
+                                        <option value="Chưa đáp ứng" class="text-red-600 font-bold">✕ Chưa đáp ứng (Not Implemented)</option>
+                                        <option value="Không áp dụng" class="text-slate-600 font-bold">○ Không áp dụng (N/A)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                     <div class="flex justify-between items-center mb-3">
+                                        <label class="block text-sm font-bold text-slate-700 uppercase">Bằng chứng (Files)</label>
+                                        <span class="text-xs bg-slate-100 px-2 py-1 rounded-md">Đa tập tin</span>
+                                    </div>
+                                    <label class="flex flex-col items-center justify-center w-full h-36 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer hover:bg-blue-50 hover:border-blue-400 transition relative">
+                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <svg class="w-10 h-10 mb-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                            <p class="text-sm text-slate-500 font-medium"><span class="text-blue-600 underline">Click tải lên</span> hoặc kéo thả file</p>
+                                            <p class="text-xs text-slate-400">(Giữ Ctrl/Shift chọn nhiều file)</p>
+                                        </div>
+                                        <input id="controlEvidenceUpload" type="file" class="hidden" multiple />
+                                        <div id="uploadLoading" class="absolute inset-0 bg-white/80 hidden flex flex-col items-center justify-center">
+                                             <span class="text-sm font-bold text-blue-700 animate-pulse">Đang tải lên cloud...</span>
+                                        </div>
+                                    </label>
+                                    <div id="evidenceList" class="mt-4 space-y-2 max-h-[200px] overflow-y-auto pr-1"></div>
+                                </div>
+                            </div>
+                            <div class="xl:col-span-7">
+                                <label class="block text-sm font-bold text-slate-700 mb-3 uppercase">Ghi chú / Hiện trạng thực tế</label>
+                                <textarea id="controlNote" rows="12" class="block w-full p-5 border-2 border-slate-300 rounded-xl focus:border-blue-500 text-base resize-none bg-slate-50 focus:bg-white transition leading-relaxed" placeholder="Mô tả hiện trạng thực tế tại tổ chức, các lỗ hổng (Gaps) hoặc kế hoạch cải thiện..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-6 mt-8 border-t border-slate-100">
+                        <button id="prevButton" class="btn-hover-effect flex items-center px-6 py-3 bg-white border-2 border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition disabled:opacity-50">Câu trước</button>
+                        <div class="text-xl font-black text-slate-300 select-none tracking-widest" id="controlCounter">1 / 100</div>
+                        <button id="nextButton" class="btn-hover-effect flex items-center px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-lg">Tiếp theo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-done" class="screen max-w-3xl mx-auto p-12 bg-white shadow-2xl rounded-3xl mt-24 text-center border border-slate-100">
+        <h1 class="text-4xl font-extrabold text-blue-700 mb-4">Đánh giá Hoàn tất!</h1>
+        <p class="text-slate-500 mb-10 text-xl">Báo cáo NIST CSF 2.0 đã được tạo thành công.</p>
+        <div class="bg-slate-50 p-6 rounded-2xl mb-10 border-2 border-slate-100 inline-block mx-auto">
+             <div class="flex items-center justify-center text-slate-700 font-medium">
+                <span id="reportFileName" class="text-lg break-all"></span>
+             </div>
+        </div>
+        <button id="restartButton" class="btn-hover-effect w-full md:w-2/3 mx-auto block bg-slate-800 text-white py-4 px-8 rounded-2xl text-xl font-bold hover:bg-slate-900 transition shadow-lg">Bắt đầu phiên mới</button>
+    </div>
+
+<script>
+// --- DATABASE NIST CSF 2.0 (Vietnamese) ---
+const CHECKLIST_DATA = [
+  // === 1. GOVERN (GV - QUẢN TRỊ) ===
+  {"section": "GV - QUẢN TRỊ", "id": "GV.OC-01", "question": "Sứ mệnh, mục tiêu và tầm nhìn của tổ chức có được thấu hiểu và thông tin đến các bên liên quan không?", "explanation": "<b>Ý nghĩa:</b> Đảm bảo chiến lược an ninh mạng phù hợp với mục tiêu kinh doanh.<br><b>Bằng chứng:</b> Tài liệu chiến lược công ty, biên bản họp BLĐ."},
+  {"section": "GV - QUẢN TRỊ", "id": "GV.OC-02", "question": "Các bên liên quan nội bộ và bên ngoài (khách hàng, đối tác, cơ quan quản lý) có được xác định rõ ràng không?", "explanation": "<b>Ý nghĩa:</b> Biết ai ảnh hưởng đến hoặc bị ảnh hưởng bởi rủi ro an ninh mạng.<br><b>Bằng chứng:</b> Danh sách các bên liên quan (Stakeholder list)."},
+  {"section": "GV - QUẢN TRỊ", "id": "GV.RM-01", "question": "Các ưu tiên quản lý rủi ro, ràng buộc và mức độ chấp nhận rủi ro (Risk Appetite) có được thiết lập và thông báo không?", "explanation": "<b>Ý nghĩa:</b> Lãnh đạo chấp nhận mất bao nhiêu tiền/dữ liệu nếu bị hack?<br><b>Bằng chứng:</b> Tuyên bố khẩu vị rủi ro (Risk Appetite Statement)."},
+  {"section": "GV - QUẢN TRỊ", "id": "GV.RR-01", "question": "Lãnh đạo tổ chức có chịu trách nhiệm và cam kết về các kết quả chiến lược an ninh mạng không?", "explanation": "<b>Ý nghĩa:</b> 'Tone from the top'. Lãnh đạo phải chịu trách nhiệm cuối cùng.<br><b>Bằng chứng:</b> Quyết định phân công trách nhiệm C-level."},
+  {"section": "GV - QUẢN TRỊ", "id": "GV.RR-02", "question": "Vai trò, trách nhiệm và quyền hạn về an ninh mạng có được thiết lập và thông báo rõ ràng không?", "explanation": "<b>Ý nghĩa:</b> Rõ người rõ việc (CISO làm gì, IT Admin làm gì).<br><b>Bằng chứng:</b> Sơ đồ tổ chức, Mô tả công việc (JD), RACI."},
+  {"section": "GV - QUẢN TRỊ", "id": "GV.PO-01", "question": "Chính sách an ninh mạng có được thiết lập, truyền thông và cập nhật định kỳ không?", "explanation": "<b>Ý nghĩa:</b> Có 'luật chơi' rõ ràng cho toàn tổ chức.<br><b>Bằng chứng:</b> Hệ thống chính sách đã ban hành và phổ biến."},
+  {"section": "GV - QUẢN TRỊ", "id": "GV.SC-04", "question": "Các nhà cung cấp (Suppliers) có được đánh giá rủi ro và ưu tiên quản lý không?", "explanation": "<b>Ý nghĩa:</b> Quản lý rủi ro chuỗi cung ứng (tránh vụ việc như SolarWinds).<br><b>Bằng chứng:</b> Danh sách nhà cung cấp quan trọng, phiếu đánh giá NCC."},
+
+  // === 2. IDENTIFY (ID - NHẬN DIỆN) ===
+  {"section": "ID - NHẬN DIỆN", "id": "ID.AM-01", "question": "Tổ chức có danh mục kiểm kê đầy đủ các thiết bị vật lý và hệ thống không?", "explanation": "<b>Ý nghĩa:</b> Không thể bảo vệ những gì mình không biết mình có.<br><b>Bằng chứng:</b> File Asset Inventory (phần cứng)."},
+  {"section": "ID - NHẬN DIỆN", "id": "ID.AM-02", "question": "Danh mục phần mềm, ứng dụng và các nền tảng (OS) có được kiểm kê và quản lý không?", "explanation": "<b>Ý nghĩa:</b> Quản lý license và các phần mềm không được phép (Shadow IT).<br><b>Bằng chứng:</b> Danh sách phần mềm (Software Inventory)."},
+  {"section": "ID - NHẬN DIỆN", "id": "ID.AM-03", "question": "Các luồng dữ liệu (data flow) và nơi lưu trữ dữ liệu quan trọng có được xác định và vẽ sơ đồ không?", "explanation": "<b>Ý nghĩa:</b> Biết dữ liệu nhạy cảm đi đâu về đâu để bảo vệ đường đi đó.<br><b>Bằng chứng:</b> Sơ đồ luồng dữ liệu (DFD)."},
+  {"section": "ID - NHẬN DIỆN", "id": "ID.RA-01", "question": "Các lỗ hổng bảo mật (vulnerabilities) trên tài sản có được xác định và lập hồ sơ không?", "explanation": "<b>Ý nghĩa:</b> Chủ động tìm lỗi trước khi hacker tìm thấy.<br><b>Bằng chứng:</b> Báo cáo Vulnerability Scan (Nessus/Qualys)."},
+  {"section": "ID - NHẬN DIỆN", "id": "ID.RA-02", "question": "Thông tin tình báo mối đe dọa (Threat Intelligence) có được thu thập từ các nguồn bên ngoài không?", "explanation": "<b>Ý nghĩa:</b> Biết xu hướng tấn công mới để phòng ngừa.<br><b>Bằng chứng:</b> Các bản tin an ninh mạng, feed threat intel."},
+  {"section": "ID - NHẬN DIỆN", "id": "ID.RA-06", "question": "Đánh giá rủi ro có được thực hiện định kỳ hoặc khi có thay đổi lớn không?", "explanation": "<b>Ý nghĩa:</b> Rủi ro luôn thay đổi, cần đánh giá lại thường xuyên.<br><b>Bằng chứng:</b> Báo cáo đánh giá rủi ro gần nhất."},
+
+  // === 3. PROTECT (PR - BẢO VỆ) ===
+  {"section": "PR - BẢO VỆ", "id": "PR.AA-01", "question": "Danh tính và thông tin xác thực (user/password) có được quản lý và bảo vệ không?", "explanation": "<b>Ý nghĩa:</b> Đảm bảo đúng người đúng quyền. Tránh lộ password.<br><b>Bằng chứng:</b> Hệ thống AD/LDAP/SSO, chính sách mật khẩu."},
+  {"section": "PR - BẢO VỆ", "id": "PR.AA-03", "question": "Quyền truy cập (vật lý và logic) có được cấp theo nguyên tắc đặc quyền tối thiểu (least privilege) không?", "explanation": "<b>Ý nghĩa:</b> Chỉ cấp vừa đủ quyền để làm việc.<br><b>Bằng chứng:</b> Ma trận phân quyền, biên bản rà soát quyền."},
+  {"section": "PR - BẢO VỆ", "id": "PR.AA-05", "question": "Xác thực mạnh (ví dụ: MFA/2FA) có được áp dụng cho các truy cập quan trọng hoặc từ xa không?", "explanation": "<b>Ý nghĩa:</b> Chống lại việc lộ mật khẩu.<br><b>Bằng chứng:</b> Cấu hình MFA cho VPN, Email, Admin portal."},
+  {"section": "PR - BẢO VỆ", "id": "PR.AT-01", "question": "Tất cả nhân viên có được đào tạo nhận thức về an ninh mạng định kỳ không?", "explanation": "<b>Ý nghĩa:</b> Con người là tuyến phòng thủ đầu tiên.<br><b>Bằng chứng:</b> Hồ sơ đào tạo, kết quả test phishing."},
+  {"section": "PR - BẢO VỆ", "id": "PR.DS-01", "question": "Dữ liệu nhạy cảm (Data-at-rest) có được bảo vệ (ví dụ: mã hóa) khi lưu trữ không?", "explanation": "<b>Ý nghĩa:</b> Mất ổ cứng/laptop nhưng không lộ dữ liệu.<br><b>Bằng chứng:</b> Cấu hình Bitlocker, mã hóa Database."},
+  {"section": "PR - BẢO VỆ", "id": "PR.DS-02", "question": "Dữ liệu đang truyền tải (Data-in-transit) có được bảo vệ (ví dụ: SSL/TLS, VPN) không?", "explanation": "<b>Ý nghĩa:</b> Tránh nghe lén trên đường truyền.<br><b>Bằng chứng:</b> Cấu hình HTTPS, VPN."},
+  {"section": "PR - BẢO VỆ", "id": "PR.DS-11", "question": "Các bản sao lưu (Backup) có được duy trì, bảo vệ và kiểm thử phục hồi định kỳ không?", "explanation": "<b>Ý nghĩa:</b> Cứu cánh khi bị Ransomware.<br><b>Bằng chứng:</b> Log backup thành công, biên bản test restore."},
+  {"section": "PR - BẢO VỆ", "id": "PR.PS-01", "question": "Cấu hình an toàn (Hardening) có được thiết lập và duy trì cho các hệ thống (endpoint, server) không?", "explanation": "<b>Ý nghĩa:</b> Không dùng cấu hình mặc định dễ bị hack.<br><b>Bằng chứng:</b> Hardening checklist, GPO."},
+  {"section": "PR - BẢO VỆ", "id": "PR.IR-01", "question": "Mạng lưới có được phân đoạn (Network Segmentation) để hạn chế lây lan khi bị tấn công không?", "explanation": "<b>Ý nghĩa:</b> Chia để trị. Máy nhân viên nhiễm virus không lây sang server.<br><b>Bằng chứng:</b> Sơ đồ VLAN, cấu hình Firewall zone."},
+
+  // === 4. DETECT (DE - PHÁT HIỆN) ===
+  {"section": "DE - PHÁT HIỆN", "id": "DE.AE-02", "question": "Các sự kiện bất thường (Anomalies) có được phát hiện và cảnh báo kịp thời không?", "explanation": "<b>Ý nghĩa:</b> Biết ngay khi có gì đó 'lạ' đang xảy ra.<br><b>Bằng chứng:</b> Hệ thống cảnh báo từ SIEM/IDS/Anti-malware."},
+  {"section": "DE - PHÁT HIỆN", "id": "DE.CM-01", "question": "Hệ thống và mạng lưới có được giám sát liên tục để phát hiện các sự kiện an ninh tiềm ẩn không?", "explanation": "<b>Ý nghĩa:</b> Giám sát 24/7 để không bỏ lọt cuộc tấn công.<br><b>Bằng chứng:</b> Dashboard giám sát (SOC/NOC)."},
+  {"section": "DE - PHÁT HIỆN", "id": "DE.CM-03", "question": "Hoạt động của nhân sự và các kết nối từ bên ngoài có được giám sát không?", "explanation": "<b>Ý nghĩa:</b> Phát hiện nội gián hoặc hacker dùng tài khoản hợp lệ.<br><b>Bằng chứng:</b> Log truy cập VPN, log hành vi người dùng (UEBA)."},
+  {"section": "DE - PHÁT HIỆN", "id": "DE.CM-06", "question": "Hoạt động giám sát có bao gồm việc kiểm tra sự hiện diện của mã độc (Malware) không?", "explanation": "<b>Ý nghĩa:</b> Cơ bản nhất của phát hiện.<br><b>Bằng chứng:</b> Phần mềm Antivirus/EDR đang hoạt động."},
+  {"section": "DE - PHÁT HIỆN", "id": "DE.CM-09", "question": "Các cảnh báo an ninh (Security Alerts) có được phân loại và ưu tiên xử lý không?", "explanation": "<b>Ý nghĩa:</b> Tránh bị 'ngập' trong cảnh báo giả.<br><b>Bằng chứng:</b> Quy trình Triage (phân loại) cảnh báo."},
+
+  // === 5. RESPOND (RS - ỨNG PHÓ) ===
+  {"section": "RS - ỨNG PHÓ", "id": "RS.MA-01", "question": "Kế hoạch ứng phó sự cố (Incident Response Plan) có được thiết lập và duy trì không?", "explanation": "<b>Ý nghĩa:</b> Kịch bản sẵn sàng khi có 'biến'.<br><b>Bằng chứng:</b> Tài liệu Kế hoạch ứng phó sự cố (IRP)."},
+  {"section": "RS - ỨNG PHÓ", "id": "RS.MA-02", "question": "Các sự cố có được báo cáo kịp thời theo các tiêu chí đã quy định không?", "explanation": "<b>Ý nghĩa:</b> Biết sớm xử lý sớm.<br><b>Bằng chứng:</b> Quy trình báo cáo, các ticket sự cố."},
+  {"section": "RS - ỨNG PHÓ", "id": "RS.AN-03", "question": "Các sự cố có được phân tích để hiểu rõ nguyên nhân gốc rễ, phạm vi và tác động không?", "explanation": "<b>Ý nghĩa:</b> Hiểu rõ kẻ địch đã làm gì, vào sâu đến đâu.<br><b>Bằng chứng:</b> Báo cáo điều tra sự cố (Forensics report)."},
+  {"section": "RS - ỨNG PHÓ", "id": "RS.MI-01", "question": "Các hành động ngăn chặn (Containment) và diệt trừ (Eradication) có được thực hiện để giảm thiểu thiệt hại không?", "explanation": "<b>Ý nghĩa:</b> Cô lập máy nhiễm virus ngay lập tức.<br><b>Bằng chứng:</b> Nhật ký xử lý sự cố (ghi lại các bước đã làm)."},
+  {"section": "RS - ỨNG PHÓ", "id": "RS.CO-02", "question": "Việc thông báo sự cố cho các bên liên quan (nội bộ, khách hàng, cơ quan chức năng) có được thực hiện khi cần thiết không?", "explanation": "<b>Ý nghĩa:</b> Tuân thủ luật và giữ uy tín.<br><b>Bằng chứng:</b> Kịch bản truyền thông khi khủng hoảng."},
+
+  // === 6. RECOVER (RC - PHỤC HỒI) ===
+  {"section": "RC - PHỤC HỒI", "id": "RC.RP-01", "question": "Kế hoạch phục hồi (Recovery Plan) có được thực hiện ngay sau sự cố không?", "explanation": "<b>Ý nghĩa:</b> Đưa hệ thống hoạt động trở lại nhanh nhất có thể.<br><b>Bằng chứng:</b> Quy trình kích hoạt DRP/BCP."},
+  {"section": "RC - PHỤC HỒI", "id": "RC.RP-03", "question": "Các bản sao lưu (Backup) có được sử dụng hiệu quả để khôi phục hệ thống không?", "explanation": "<b>Ý nghĩa:</b> Backup phải dùng được khi cần.<br><b>Bằng chứng:</b> Biên bản khôi phục dữ liệu thực tế."},
+  {"section": "RC - PHỤC HỒI", "id": "RC.RP-06", "question": "Tính toàn vẹn của các bản sao lưu có được kiểm tra trước khi phục hồi không?", "explanation": "<b>Ý nghĩa:</b> Tránh khôi phục lại chính con virus đã được backup.<br><b>Bằng chứng:</b> Quy trình kiểm tra malware cho bản backup."},
+  {"section": "RC - PHỤC HỒI", "id": "RC.CO-03", "question": "Các hoạt động phục hồi có được truyền thông rõ ràng đến các bên liên quan không?", "explanation": "<b>Ý nghĩa:</b> Để mọi người biết khi nào hệ thống chạy lại bình thường.<br><b>Bằng chứng:</b> Email/Thông báo trạng thái hệ thống."},
+  {"section": "RC - PHỤC HỒI", "id": "RC.CO-04", "question": "Bài học kinh nghiệm (Lessons Learned) có được rút ra sau sự cố để cải thiện chiến lược tương lai không?", "explanation": "<b>Ý nghĩa:</b> Không để vấp ngã 2 lần vì cùng 1 lỗi.<br><b>Bằng chứng:</b> Báo cáo Post-Incident Review."}
+];
+
+let currentQuestionIndex = 0, clientName = "", auditResults = [], isDirty = false, sections = [];
+const els = {
+    clientNameInput: document.getElementById('clientName'), startButton: document.getElementById('startButton'),
+    clientNameDisplay: document.getElementById('clientNameDisplay'), saveReportButton: document.getElementById('saveReportButton'),
+    sectionList: document.getElementById('sectionList'), progressText: document.getElementById('progressText'),
+    progressBar: document.getElementById('progressBar'), controlSection: document.getElementById('controlSection'),
+    controlId: document.getElementById('controlId'), controlQuestion: document.getElementById('controlQuestion'),
+    controlStatus: document.getElementById('controlStatus'), controlEvidenceUpload: document.getElementById('controlEvidenceUpload'),
+    evidenceList: document.getElementById('evidenceList'), uploadLoading: document.getElementById('uploadLoading'),
+    controlNote: document.getElementById('controlNote'), prevButton: document.getElementById('prevButton'),
+    nextButton: document.getElementById('nextButton'), controlCounter: document.getElementById('controlCounter'), reportFileName: document.getElementById('reportFileName')
+};
+const screens = { setup: document.getElementById('screen-setup'), audit: document.getElementById('screen-audit'), done: document.getElementById('screen-done') };
+
+window.addEventListener('beforeunload', (e) => { if (isDirty) { e.preventDefault(); e.returnValue = ''; } });
+function showScreen(sid) { Object.values(screens).forEach(s => s.classList.remove('active')); screens[sid].classList.add('active'); }
+function populateSidebar() {
+    sections = [...new Set(CHECKLIST_DATA.map(item => item.section))]; els.sectionList.innerHTML = '';
+    sections.forEach(sec => {
+        const li = document.createElement('li'), btn = document.createElement('button');
+        btn.className = "w-full text-left p-3 rounded-lg font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition duration-150";
+        btn.textContent = sec; btn.onclick = () => jumpToSection(sec); li.appendChild(btn); els.sectionList.appendChild(li);
+    });
+}
+function updateSidebarHighlight(curr) { els.sectionList.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.textContent === curr)); }
+function jumpToSection(name) { saveCurrentAnswer(); currentQuestionIndex = CHECKLIST_DATA.findIndex(i => i.section === name); loadQuestion(currentQuestionIndex); updateProgress(); }
+function startAudit() {
+    clientName = els.clientNameInput.value.trim(); if (clientName === "") return alert("Vui lòng nhập tên khách hàng.");
+    els.clientNameDisplay.textContent = clientName;
+    auditResults = CHECKLIST_DATA.map(item => ({ ...item, status: "Bỏ qua", note: "", evidence_files: [] }));
+    populateSidebar(); currentQuestionIndex = 0; loadQuestion(0); updateProgress(); showScreen('audit'); isDirty = true;
+}
+function renderEvidenceList() {
+    const files = auditResults[currentQuestionIndex].evidence_files || []; els.evidenceList.innerHTML = '';
+    if (files.length === 0) { els.evidenceList.innerHTML = '<div class="text-sm text-slate-400 italic pl-2">Chưa có file bằng chứng.</div>'; return; }
+    files.forEach((url, index) => {
+        const div = document.createElement('div'); div.className = 'flex items-center justify-between p-2.5 bg-blue-50 rounded-lg border border-blue-100 group hover:border-blue-300 transition';
+        div.innerHTML = `<a href="${url}" target="_blank" class="text-sm text-blue-700 hover:underline truncate flex-1 mr-3 font-medium" title="${url.split('/').pop()}">📄 ${url.split('/').pop()}</a><button type="button" class="text-slate-400 hover:text-red-500 focus:outline-none p-1.5 rounded-full hover:bg-red-50 transition" title="Xóa file này" onclick="removeEvidenceFile(${index})"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>`;
+        els.evidenceList.appendChild(div);
+    });
+}
+window.removeEvidenceFile = function(fileIndex) { if (confirm('Bạn chắc chắn muốn xóa file này?')) { auditResults[currentQuestionIndex].evidence_files.splice(fileIndex, 1); renderEvidenceList(); }};
+function loadQuestion(idx) {
+    const item = CHECKLIST_DATA[idx], res = auditResults[idx];
+    els.controlSection.textContent = item.section; els.controlId.textContent = item.id; els.controlQuestion.textContent = item.question; els.controlStatus.value = res.status;
+    renderEvidenceList(); els.controlEvidenceUpload.value = null; els.controlNote.value = res.note; els.controlCounter.textContent = `${idx + 1} / ${CHECKLIST_DATA.length}`;
+    updateSidebarHighlight(item.section);
+    els.prevButton.disabled = (idx === 0); els.prevButton.classList.toggle('opacity-50', idx === 0); els.prevButton.classList.toggle('cursor-not-allowed', idx === 0);
+    const isLast = idx === CHECKLIST_DATA.length - 1;
+    els.nextButton.innerHTML = isLast ? `Hoàn thành <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>` : `Tiếp theo <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>`;
+    els.nextButton.classList.toggle('bg-blue-800', isLast); els.nextButton.classList.toggle('hover:bg-blue-900', isLast);
+    els.nextButton.classList.toggle('bg-blue-600', !isLast); els.nextButton.classList.toggle('hover:bg-blue-700', !isLast);
+    const expArea = document.getElementById('explanationArea'), expContent = document.getElementById('explanationContent');
+    if (expArea.querySelector('details')) expArea.querySelector('details').removeAttribute('open');
+    if (item.explanation) { expArea.classList.remove('hidden'); expContent.innerHTML = item.explanation; } else { expArea.classList.add('hidden'); }
+}
+async function handleFileUpload(e) {
+    const files = e.target.files; if (!files || files.length === 0) return;
+    els.uploadLoading.classList.remove('hidden');
+    const safeName = clientName ? clientName.trim().replace(/[^a-z0-9]/gi, '-').toLowerCase() : 'unknown';
+    for (let i = 0; i < files.length; i++) {
+        const formData = new FormData(); formData.append('file', files[i]);
+        try {
+            const res = await fetch('/api/upload', { method: 'POST', headers: { 'x-client-name': safeName }, body: formData });
+            if (!res.ok) throw new Error((await res.json()).error || 'Upload thất bại.');
+            const data = await res.json(); auditResults[currentQuestionIndex].evidence_files.push(data.url);
+        } catch (err) { console.error(err); alert(`Lỗi khi tải file ${files[i].name}: ${err.message}`); }
+    }
+    els.uploadLoading.classList.add('hidden'); renderEvidenceList(); e.target.value = null;
+}
+function saveCurrentAnswer() { if(auditResults[currentQuestionIndex]) { auditResults[currentQuestionIndex].status = els.controlStatus.value; auditResults[currentQuestionIndex].note = els.controlNote.value.trim(); } }
+function nextQuestion() { saveCurrentAnswer(); if (currentQuestionIndex < CHECKLIST_DATA.length - 1) { currentQuestionIndex++; loadQuestion(currentQuestionIndex); } else { generateReport(); } updateProgress(); }
+function prevQuestion() { saveCurrentAnswer(); if (currentQuestionIndex > 0) { currentQuestionIndex--; loadQuestion(currentQuestionIndex); } updateProgress(); }
+function updateProgress() { const answered = auditResults.filter(r => r.status !== "Bỏ qua").length; els.progressText.textContent = `${answered}/${CHECKLIST_DATA.length}`; els.progressBar.style.setProperty('--progress-width', `${(answered / CHECKLIST_DATA.length) * 100}%`); }
+
+function generateReport() {
+    try {
+        if (!confirm("Bạn có chắc chắn muốn hoàn thành và xuất báo cáo NIST CSF không?")) return;
+        saveCurrentAnswer(); updateProgress();
+        const total = CHECKLIST_DATA.length, audited = auditResults.filter(r => r.status !== "Bỏ qua").length, compliant = auditResults.filter(r => r.status === "Đáp ứng hoàn toàn").length, partial = auditResults.filter(r => r.status === "Đáp ứng một phần").length, notimpl = auditResults.filter(r => r.status === "Chưa đáp ứng").length, na = auditResults.filter(r => r.status === "Không áp dụng").length, denom = audited - na;
+        // Tính điểm NIST: (Đáp ứng hoàn toàn * 1 + Đáp ứng một phần * 0.5) / Tổng số áp dụng
+        const score = denom > 0 ? Math.round(((compliant * 1 + partial * 0.5) / denom) * 100) : 0;
+        let evalText = "", evalColor = ""; if (score >= 90) { evalText = "Hệ thống đang ở Tier 4 (Adaptive) - Rất tốt."; evalColor = "text-blue-600"; } else if (score >= 70) { evalText = "Hệ thống đang ở Tier 3 (Repeatable) - Khá."; evalColor = "text-emerald-600"; } else if (score >= 40) { evalText = "Hệ thống đang ở Tier 2 (Risk Informed) - Trung bình."; evalColor = "text-amber-600"; } else { evalText = "Hệ thống đang ở Tier 1 (Partial) - Cần cải thiện gấp."; evalColor = "text-red-600"; }
+        const sectionStats = {}; auditResults.forEach(r => { if (!sectionStats[r.section]) sectionStats[r.section] = { score: 0, count: 0 }; if (r.status !== "Bỏ qua" && r.status !== "Không áp dụng") { sectionStats[r.section].count++; if (r.status === "Đáp ứng hoàn toàn") sectionStats[r.section].score += 1; if (r.status === "Đáp ứng một phần") sectionStats[r.section].score += 0.5; } });
+        const chartLabels = Object.keys(sectionStats), chartData = chartLabels.map(s => sectionStats[s].count > 0 ? Math.round((sectionStats[s].score / sectionStats[s].count) * 100) : 0);
+        const now = new Date(), reportDate = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`, safeName = clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        
+        const reportHTML = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Báo cáo NIST CSF 2.0 - ${clientName}</title><script src="https://cdn.tailwindcss.com"><\/script><script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script><style>@media print{@page{size:A4 landscape;margin:10mm}body{margin:0;padding:0;background:white}.container{width:100%!important;max-width:none!important;box-shadow:none!important;margin:0!important;padding:0!important}.no-print{display:none!important}.page-break{page-break-before:always}h2,h3,.bg-slate-50,tr{break-inside:avoid}canvas{max-width:100%!important;max-height:100%!important}}body{font-family:'Inter',sans-serif;background:#f8fafc}.container{max-width:1000px;margin:0 auto;background:white;padding:40px;box-shadow:0 10px 30px -10px rgba(0,0,0,.1)}</style></head><body class="p-0 md:p-10"><div class="container mx-auto my-10 rounded-xl" id="report-container"><div class="flex justify-between items-center border-b-2 border-slate-800 pb-6 mb-8"><div><h1 class="text-4xl font-extrabold text-slate-800 uppercase">Báo cáo Đánh giá</h1><div class="text-xl font-semibold text-blue-600 mt-1">NIST CSF 2.0</div></div><div class="text-right"><div class="text-slate-500 font-medium">Tổ chức được đánh giá</div><div class="text-2xl font-bold text-slate-800">${clientName}</div><div class="text-slate-400 text-sm mt-1">Ngày: ${reportDate}</div></div></div><div class="bg-slate-50 rounded-2xl p-8 mb-10 border border-slate-200"><h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center"><span class="bg-blue-600 w-2 h-8 mr-3 rounded-full"></span>1. Tóm tắt Tổng quan (Executive Summary)</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-8"><div class="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-sm border border-slate-100"><div class="relative w-40 h-40"><svg class="w-full h-full" viewBox="0 0 36 36"><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e2e8f0" stroke-width="3"/><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${score >= 70 ? '#2563eb' : (score >= 40 ? '#d97706' : '#dc2626')}" stroke-width="3" stroke-dasharray="${score}, 100"/><text x="18" y="20.5" font-size="8" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="${score >= 70 ? '#2563eb' : (score >= 40 ? '#d97706' : '#dc2626')}">${score}%</text></svg></div><div class="mt-4 text-lg font-bold text-slate-700">Điểm Maturity</div></div><div class="md:col-span-2 flex flex-col justify-center space-y-6"><div class="grid grid-cols-4 gap-2 text-center text-xs md:text-sm"><div class="p-3 bg-blue-50 rounded-lg border border-blue-100"><div class="text-2xl font-extrabold text-blue-600">${compliant}</div><div class="font-semibold text-blue-800">Đáp ứng đủ</div></div><div class="p-3 bg-amber-50 rounded-lg border border-amber-100"><div class="text-2xl font-extrabold text-amber-600">${partial}</div><div class="font-semibold text-amber-800">Một phần</div></div><div class="p-3 bg-red-50 rounded-lg border border-red-100"><div class="text-2xl font-extrabold text-red-600">${notimpl}</div><div class="font-semibold text-red-800">Chưa đáp ứng</div></div><div class="p-3 bg-slate-100 rounded-lg border border-slate-200"><div class="text-2xl font-extrabold text-slate-600">${na}</div><div class="font-semibold text-slate-700">N/A</div></div></div><div class="p-5 bg-white rounded-xl border-l-4 ${score >= 70 ? 'border-blue-500' : (score >= 40 ? 'border-amber-500' : 'border-red-500')} shadow-sm"><div class="text-sm font-bold text-slate-400 uppercase mb-1">Nhận định sơ bộ</div><div class="text-lg font-bold ${evalColor}">${evalText}</div></div></div></div></div><div class="mb-12"><h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center"><span class="bg-blue-600 w-2 h-8 mr-3 rounded-full"></span>2. Biểu đồ Trưởng thành theo Chức năng (NIST Functions)</h2><div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200" style="height:400px"><canvas id="domainChart"></canvas></div></div><div class="page-break"></div><div class="mb-12 mt-10"><h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center text-red-700"><span class="bg-red-600 w-2 h-8 mr-3 rounded-full"></span>3. Các Điểm yếu Cần khắc phục ngay (Gaps)</h2>${notimpl===0?'<div class="p-5 bg-blue-50 text-blue-700 rounded-xl font-medium border border-blue-200">Tuyệt vời! Không có hạng mục nào "Chưa đáp ứng".</div>':`<table class="w-full text-sm text-left text-slate-700 border-collapse"><thead class="text-xs text-white uppercase bg-red-700"><tr><th class="px-4 py-3 rounded-tl-lg">ID</th><th class="px-4 py-3">Kiểm soát (Subcategory)</th><th class="px-4 py-3 rounded-tr-lg">Hiện trạng & Ghi chú</th></tr></thead><tbody>${auditResults.filter(r=>r.status==="Chưa đáp ứng").map(r=>`<tr class="border-b border-slate-200 bg-red-50/30"><td class="px-4 py-4 font-bold text-red-700 align-top">${r.id}</td><td class="px-4 py-4 font-medium align-top">${r.question}</td><td class="px-4 py-4 text-slate-600 align-top">${r.note||'Chưa có ghi chú.'}</td></tr>`).join('')}</tbody></table>`}</div><div><h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center"><span class="bg-blue-600 w-2 h-8 mr-3 rounded-full"></span>4. Chi tiết Kết quả Đánh giá</h2><div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left text-slate-700"><thead class="text-xs text-slate-700 uppercase bg-slate-100"><tr><th class="px-4 py-3">ID</th><th class="px-4 py-3">Trạng thái</th><th class="px-4 py-3 w-1/3">Ghi chú</th><th class="px-4 py-3">Bằng chứng</th></tr></thead><tbody class="divide-y divide-slate-200">${auditResults.filter(r=>r.status!=="Bỏ qua").map(r=>`<tr class="bg-white hover:bg-slate-50"><td class="px-4 py-4 font-medium align-top">${r.id}</td><td class="px-4 py-4 align-top"><span class="px-3 py-1 rounded-full text-xs font-bold ${r.status==='Đáp ứng hoàn toàn'?'bg-blue-100 text-blue-800':r.status==='Chưa đáp ứng'?'bg-red-100 text-red-800':r.status==='Đáp ứng một phần'?'bg-amber-100 text-amber-800':'bg-slate-100 text-slate-800'}">${r.status}</span></td><td class="px-4 py-4 align-top text-slate-600 whitespace-pre-wrap">${r.note}</td><td class="px-4 py-4 align-top">${r.evidence_files&&r.evidence_files.length>0?r.evidence_files.map(u=>`<a href="${u}" target="_blank" class="text-blue-600 hover:underline block mb-1 truncate max-w-xs">📎 ${u.split('/').pop()}</a>`).join('<br>'):'<span class="text-slate-400 italic">-</span>'}</td></tr>`).join('')}</tbody></table></div></div></div><div class="fixed bottom-8 right-8 no-print"><button onclick="window.print()" class="bg-blue-600 text-white p-4 rounded-full shadow-xl hover:bg-blue-700 transition flex items-center font-bold"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>IN BÁO CÁO (PDF)</button></div><script>document.addEventListener('DOMContentLoaded',()=>{new Chart(document.getElementById('domainChart').getContext('2d'),{type:'radar',data:{labels:${JSON.stringify(chartLabels)},datasets:[{label:'Mức độ trưởng thành (%)',data:${JSON.stringify(chartData)},backgroundColor:'rgba(37, 99, 235, 0.2)',borderColor:'rgb(37, 99, 235)',pointBackgroundColor:'rgb(37, 99, 235)',pointBorderColor:'#fff',pointHoverBackgroundColor:'#fff',pointHoverBorderColor:'rgb(37, 99, 235)'}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{angleLines:{display:true},suggestedMin:0,suggestedMax:100}},plugins:{legend:{position:'top'}}}})});<\/script></body></html>`;
+        saveAs(new Blob([reportHTML], { type: "text/html;charset=utf-8" }), `Bao_cao_NIST_CSF_${safeName}_${now.toISOString().slice(0,10)}.html`);
+        els.reportFileName.textContent = `Bao_cao_NIST_CSF_${safeName}_${now.toISOString().slice(0,10)}.html`; showScreen('done'); isDirty = false;
+    } catch (e) { console.error(e); alert("Lỗi khi tạo báo cáo: " + e.message); }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    els.startButton.addEventListener('click', startAudit);
+    els.controlStatus.addEventListener('change', () => { saveCurrentAnswer(); updateProgress(); });
+    els.prevButton.addEventListener('click', prevQuestion);
+    els.nextButton.addEventListener('click', nextQuestion);
+    els.saveReportButton.addEventListener('click', generateReport);
+    els.controlEvidenceUpload.addEventListener('change', handleFileUpload);
+    els.restartButton.addEventListener('click', () => { els.clientNameInput.value = ""; showScreen('setup'); });
+});
+</script>
+</body>
+</html>

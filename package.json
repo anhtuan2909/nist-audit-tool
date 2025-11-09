@@ -1,0 +1,15 @@
+{
+  "name": "iso-audit-tool",
+  "version": "1.0.0",
+  "description": "ISO 27001 Audit Tool with Serverless Upload",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "@vercel/blob": "^0.22.1",
+    "busboy": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
