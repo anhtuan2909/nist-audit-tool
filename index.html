@@ -156,56 +156,728 @@
 <script>
 // --- DATABASE NIST CSF 2.0 (Vietnamese) ---
 const CHECKLIST_DATA = [
-  // === 1. GOVERN (GV - QUẢN TRỊ) ===
-  {"section": "GV - QUẢN TRỊ", "id": "GV.OC-01", "question": "Sứ mệnh, mục tiêu và tầm nhìn của tổ chức có được thấu hiểu và thông tin đến các bên liên quan không?", "explanation": "<b>Ý nghĩa:</b> Đảm bảo chiến lược an ninh mạng phù hợp với mục tiêu kinh doanh.<br><b>Bằng chứng:</b> Tài liệu chiến lược công ty, biên bản họp BLĐ."},
-  {"section": "GV - QUẢN TRỊ", "id": "GV.OC-02", "question": "Các bên liên quan nội bộ và bên ngoài (khách hàng, đối tác, cơ quan quản lý) có được xác định rõ ràng không?", "explanation": "<b>Ý nghĩa:</b> Biết ai ảnh hưởng đến hoặc bị ảnh hưởng bởi rủi ro an ninh mạng.<br><b>Bằng chứng:</b> Danh sách các bên liên quan (Stakeholder list)."},
-  {"section": "GV - QUẢN TRỊ", "id": "GV.RM-01", "question": "Các ưu tiên quản lý rủi ro, ràng buộc và mức độ chấp nhận rủi ro (Risk Appetite) có được thiết lập và thông báo không?", "explanation": "<b>Ý nghĩa:</b> Lãnh đạo chấp nhận mất bao nhiêu tiền/dữ liệu nếu bị hack?<br><b>Bằng chứng:</b> Tuyên bố khẩu vị rủi ro (Risk Appetite Statement)."},
-  {"section": "GV - QUẢN TRỊ", "id": "GV.RR-01", "question": "Lãnh đạo tổ chức có chịu trách nhiệm và cam kết về các kết quả chiến lược an ninh mạng không?", "explanation": "<b>Ý nghĩa:</b> 'Tone from the top'. Lãnh đạo phải chịu trách nhiệm cuối cùng.<br><b>Bằng chứng:</b> Quyết định phân công trách nhiệm C-level."},
-  {"section": "GV - QUẢN TRỊ", "id": "GV.RR-02", "question": "Vai trò, trách nhiệm và quyền hạn về an ninh mạng có được thiết lập và thông báo rõ ràng không?", "explanation": "<b>Ý nghĩa:</b> Rõ người rõ việc (CISO làm gì, IT Admin làm gì).<br><b>Bằng chứng:</b> Sơ đồ tổ chức, Mô tả công việc (JD), RACI."},
-  {"section": "GV - QUẢN TRỊ", "id": "GV.PO-01", "question": "Chính sách an ninh mạng có được thiết lập, truyền thông và cập nhật định kỳ không?", "explanation": "<b>Ý nghĩa:</b> Có 'luật chơi' rõ ràng cho toàn tổ chức.<br><b>Bằng chứng:</b> Hệ thống chính sách đã ban hành và phổ biến."},
-  {"section": "GV - QUẢN TRỊ", "id": "GV.SC-04", "question": "Các nhà cung cấp (Suppliers) có được đánh giá rủi ro và ưu tiên quản lý không?", "explanation": "<b>Ý nghĩa:</b> Quản lý rủi ro chuỗi cung ứng (tránh vụ việc như SolarWinds).<br><b>Bằng chứng:</b> Danh sách nhà cung cấp quan trọng, phiếu đánh giá NCC."},
+  // ========================================================================
+  // 1. GOVERN (GV - QUẢN TRỊ) - 31 Subcategories
+  // ========================================================================
+  // --- GV.OC: Bối cảnh Tổ chức (Organizational Context) ---
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.OC-01",
+    "question": "Sứ mệnh, tầm nhìn và các mục tiêu chiến lược của tổ chức có được thấu hiểu và sử dụng để định hướng các quyết định về an ninh mạng không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo an ninh mạng phục vụ mục tiêu kinh doanh.<br><b>Bằng chứng:</b> Tài liệu chiến lược công ty; Biên bản họp BLĐ về định hướng ANTT."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.OC-02",
+    "question": "Các bên liên quan nội bộ và bên ngoài có được xác định và thấu hiểu nhu cầu, kỳ vọng của họ về an ninh mạng không?",
+    "explanation": "<b>Ý nghĩa:</b> Biết rõ ai đang kỳ vọng gì để đáp ứng.<br><b>Bằng chứng:</b> Danh sách các bên liên quan (Stakeholder Register); Khảo sát nhu cầu ANTT."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.OC-03",
+    "question": "Các yêu cầu pháp lý, quy định và nghĩa vụ hợp đồng liên quan đến an ninh mạng có được xác định và quản lý không?",
+    "explanation": "<b>Ý nghĩa:</b> Tránh rủi ro pháp lý.<br><b>Bằng chứng:</b> Danh mục văn bản pháp quy (Luật ANM, NĐ13...); Báo cáo đánh giá tuân thủ."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.OC-04",
+    "question": "Các tài sản quan trọng và quy trình nghiệp vụ then chốt tạo ra giá trị cho tổ chức có được xác định rõ ràng không?",
+    "explanation": "<b>Ý nghĩa:</b> Xác định 'Crown Jewels' để ưu tiên bảo vệ.<br><b>Bằng chứng:</b> Báo cáo BIA; Danh sách tài sản quan trọng."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.OC-05",
+    "question": "Kết quả, năng lực và hiệu quả của chiến lược an ninh mạng hiện tại có được sử dụng để điều chỉnh chiến lược tương lai không?",
+    "explanation": "<b>Ý nghĩa:</b> Học từ quá khứ để cải tiến tương lai.<br><b>Bằng chứng:</b> Báo cáo tổng kết chiến lược ANTT; Quyết định điều chỉnh chiến lược."
+  },
 
-  // === 2. IDENTIFY (ID - NHẬN DIỆN) ===
-  {"section": "ID - NHẬN DIỆN", "id": "ID.AM-01", "question": "Tổ chức có danh mục kiểm kê đầy đủ các thiết bị vật lý và hệ thống không?", "explanation": "<b>Ý nghĩa:</b> Không thể bảo vệ những gì mình không biết mình có.<br><b>Bằng chứng:</b> File Asset Inventory (phần cứng)."},
-  {"section": "ID - NHẬN DIỆN", "id": "ID.AM-02", "question": "Danh mục phần mềm, ứng dụng và các nền tảng (OS) có được kiểm kê và quản lý không?", "explanation": "<b>Ý nghĩa:</b> Quản lý license và các phần mềm không được phép (Shadow IT).<br><b>Bằng chứng:</b> Danh sách phần mềm (Software Inventory)."},
-  {"section": "ID - NHẬN DIỆN", "id": "ID.AM-03", "question": "Các luồng dữ liệu (data flow) và nơi lưu trữ dữ liệu quan trọng có được xác định và vẽ sơ đồ không?", "explanation": "<b>Ý nghĩa:</b> Biết dữ liệu nhạy cảm đi đâu về đâu để bảo vệ đường đi đó.<br><b>Bằng chứng:</b> Sơ đồ luồng dữ liệu (DFD)."},
-  {"section": "ID - NHẬN DIỆN", "id": "ID.RA-01", "question": "Các lỗ hổng bảo mật (vulnerabilities) trên tài sản có được xác định và lập hồ sơ không?", "explanation": "<b>Ý nghĩa:</b> Chủ động tìm lỗi trước khi hacker tìm thấy.<br><b>Bằng chứng:</b> Báo cáo Vulnerability Scan (Nessus/Qualys)."},
-  {"section": "ID - NHẬN DIỆN", "id": "ID.RA-02", "question": "Thông tin tình báo mối đe dọa (Threat Intelligence) có được thu thập từ các nguồn bên ngoài không?", "explanation": "<b>Ý nghĩa:</b> Biết xu hướng tấn công mới để phòng ngừa.<br><b>Bằng chứng:</b> Các bản tin an ninh mạng, feed threat intel."},
-  {"section": "ID - NHẬN DIỆN", "id": "ID.RA-06", "question": "Đánh giá rủi ro có được thực hiện định kỳ hoặc khi có thay đổi lớn không?", "explanation": "<b>Ý nghĩa:</b> Rủi ro luôn thay đổi, cần đánh giá lại thường xuyên.<br><b>Bằng chứng:</b> Báo cáo đánh giá rủi ro gần nhất."},
+  // --- GV.RM: Chiến lược Quản lý Rủi ro (Risk Management Strategy) ---
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RM-01",
+    "question": "Khẩu vị rủi ro (Risk Appetite) và mức độ chấp nhận rủi ro có được xác định và truyền thông rõ ràng không?",
+    "explanation": "<b>Ý nghĩa:</b> Lãnh đạo chấp nhận mức độ rủi ro nào.<br><b>Bằng chứng:</b> Tuyên bố khẩu vị rủi ro (Risk Appetite Statement)."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RM-02",
+    "question": "Các chiến lược quản lý rủi ro (chấp nhận, tránh, giảm thiểu, chuyển giao) có được thiết lập và thống nhất không?",
+    "explanation": "<b>Ý nghĩa:</b> Khung hướng dẫn chung để xử lý rủi ro.<br><b>Bằng chứng:</b> Chính sách quản lý rủi ro; Khung ERM."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RM-03",
+    "question": "Các mô hình và phương pháp đánh giá rủi ro an ninh mạng có được xác định và áp dụng nhất quán không?",
+    "explanation": "<b>Ý nghĩa:</b> Thống nhất 'thước đo' rủi ro.<br><b>Bằng chứng:</b> Quy trình đánh giá rủi ro chuẩn (ISO 27005, NIST SP 800-30)."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RM-04",
+    "question": "Rủi ro an ninh mạng có được xem xét trong bối cảnh rủi ro chung của toàn doanh nghiệp không?",
+    "explanation": "<b>Ý nghĩa:</b> Tích hợp rủi ro IT vào rủi ro doanh nghiệp.<br><b>Bằng chứng:</b> Báo cáo rủi ro tích hợp (Integrated Risk Report)."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RM-05",
+    "question": "Việc chia sẻ thông tin rủi ro nội bộ và bên ngoài có được thực hiện để nâng cao nhận thức không?",
+    "explanation": "<b>Ý nghĩa:</b> Chia sẻ để cùng phòng tránh.<br><b>Bằng chứng:</b> Bản tin an ninh nội bộ; Tham gia các diễn đàn chia sẻ (ISAC)."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RM-06",
+    "question": "Rủi ro từ việc sử dụng công nghệ thông tin có được xác định và quản lý không?",
+    "explanation": "<b>Ý nghĩa:</b> Đánh giá rủi ro trước khi áp dụng công nghệ mới.<br><b>Bằng chứng:</b> Đánh giá rủi ro dự án CNTT."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RM-07",
+    "question": "Các phương án chuyển giao rủi ro (ví dụ: bảo hiểm an ninh mạng) có được sử dụng không?",
+    "explanation": "<b>Ý nghĩa:</b> Giảm gánh nặng tài chính khi có sự cố.<br><b>Bằng chứng:</b> Hợp đồng bảo hiểm Cyber."
+  },
 
-  // === 3. PROTECT (PR - BẢO VỆ) ===
-  {"section": "PR - BẢO VỆ", "id": "PR.AA-01", "question": "Danh tính và thông tin xác thực (user/password) có được quản lý và bảo vệ không?", "explanation": "<b>Ý nghĩa:</b> Đảm bảo đúng người đúng quyền. Tránh lộ password.<br><b>Bằng chứng:</b> Hệ thống AD/LDAP/SSO, chính sách mật khẩu."},
-  {"section": "PR - BẢO VỆ", "id": "PR.AA-03", "question": "Quyền truy cập (vật lý và logic) có được cấp theo nguyên tắc đặc quyền tối thiểu (least privilege) không?", "explanation": "<b>Ý nghĩa:</b> Chỉ cấp vừa đủ quyền để làm việc.<br><b>Bằng chứng:</b> Ma trận phân quyền, biên bản rà soát quyền."},
-  {"section": "PR - BẢO VỆ", "id": "PR.AA-05", "question": "Xác thực mạnh (ví dụ: MFA/2FA) có được áp dụng cho các truy cập quan trọng hoặc từ xa không?", "explanation": "<b>Ý nghĩa:</b> Chống lại việc lộ mật khẩu.<br><b>Bằng chứng:</b> Cấu hình MFA cho VPN, Email, Admin portal."},
-  {"section": "PR - BẢO VỆ", "id": "PR.AT-01", "question": "Tất cả nhân viên có được đào tạo nhận thức về an ninh mạng định kỳ không?", "explanation": "<b>Ý nghĩa:</b> Con người là tuyến phòng thủ đầu tiên.<br><b>Bằng chứng:</b> Hồ sơ đào tạo, kết quả test phishing."},
-  {"section": "PR - BẢO VỆ", "id": "PR.DS-01", "question": "Dữ liệu nhạy cảm (Data-at-rest) có được bảo vệ (ví dụ: mã hóa) khi lưu trữ không?", "explanation": "<b>Ý nghĩa:</b> Mất ổ cứng/laptop nhưng không lộ dữ liệu.<br><b>Bằng chứng:</b> Cấu hình Bitlocker, mã hóa Database."},
-  {"section": "PR - BẢO VỆ", "id": "PR.DS-02", "question": "Dữ liệu đang truyền tải (Data-in-transit) có được bảo vệ (ví dụ: SSL/TLS, VPN) không?", "explanation": "<b>Ý nghĩa:</b> Tránh nghe lén trên đường truyền.<br><b>Bằng chứng:</b> Cấu hình HTTPS, VPN."},
-  {"section": "PR - BẢO VỆ", "id": "PR.DS-11", "question": "Các bản sao lưu (Backup) có được duy trì, bảo vệ và kiểm thử phục hồi định kỳ không?", "explanation": "<b>Ý nghĩa:</b> Cứu cánh khi bị Ransomware.<br><b>Bằng chứng:</b> Log backup thành công, biên bản test restore."},
-  {"section": "PR - BẢO VỆ", "id": "PR.PS-01", "question": "Cấu hình an toàn (Hardening) có được thiết lập và duy trì cho các hệ thống (endpoint, server) không?", "explanation": "<b>Ý nghĩa:</b> Không dùng cấu hình mặc định dễ bị hack.<br><b>Bằng chứng:</b> Hardening checklist, GPO."},
-  {"section": "PR - BẢO VỆ", "id": "PR.IR-01", "question": "Mạng lưới có được phân đoạn (Network Segmentation) để hạn chế lây lan khi bị tấn công không?", "explanation": "<b>Ý nghĩa:</b> Chia để trị. Máy nhân viên nhiễm virus không lây sang server.<br><b>Bằng chứng:</b> Sơ đồ VLAN, cấu hình Firewall zone."},
+  // --- GV.RR: Vai trò, Trách nhiệm và Quyền hạn ---
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RR-01",
+    "question": "Lãnh đạo cao nhất có cam kết, định hướng và chịu trách nhiệm giải trình về chiến lược an ninh mạng không?",
+    "explanation": "<b>Ý nghĩa:</b> Cam kết từ cấp cao nhất.<br><b>Bằng chứng:</b> Tuyên bố cam kết của lãnh đạo; Phân công C-level phụ trách."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RR-02",
+    "question": "Các vai trò và trách nhiệm an ninh mạng có được xác định, mô tả và truyền thông rõ ràng không?",
+    "explanation": "<b>Ý nghĩa:</b> Rõ người rõ việc.<br><b>Bằng chứng:</b> Sơ đồ tổ chức ANTT; JD; RACI matrix."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RR-03",
+    "question": "Nguồn lực (nhân sự, ngân sách, công nghệ) có được phân bổ đầy đủ để thực hiện chiến lược an ninh mạng không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo đủ nguồn lực.<br><b>Bằng chứng:</b> Ngân sách ANTT được phê duyệt."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.RR-04",
+    "question": "Văn hóa an ninh mạng có được xây dựng và thúc đẩy trong toàn tổ chức không?",
+    "explanation": "<b>Ý nghĩa:</b> Biến bảo mật thành trách nhiệm chung.<br><b>Bằng chứng:</b> Chương trình văn hóa doanh nghiệp lồng ghép ANTT."
+  },
 
-  // === 4. DETECT (DE - PHÁT HIỆN) ===
-  {"section": "DE - PHÁT HIỆN", "id": "DE.AE-02", "question": "Các sự kiện bất thường (Anomalies) có được phát hiện và cảnh báo kịp thời không?", "explanation": "<b>Ý nghĩa:</b> Biết ngay khi có gì đó 'lạ' đang xảy ra.<br><b>Bằng chứng:</b> Hệ thống cảnh báo từ SIEM/IDS/Anti-malware."},
-  {"section": "DE - PHÁT HIỆN", "id": "DE.CM-01", "question": "Hệ thống và mạng lưới có được giám sát liên tục để phát hiện các sự kiện an ninh tiềm ẩn không?", "explanation": "<b>Ý nghĩa:</b> Giám sát 24/7 để không bỏ lọt cuộc tấn công.<br><b>Bằng chứng:</b> Dashboard giám sát (SOC/NOC)."},
-  {"section": "DE - PHÁT HIỆN", "id": "DE.CM-03", "question": "Hoạt động của nhân sự và các kết nối từ bên ngoài có được giám sát không?", "explanation": "<b>Ý nghĩa:</b> Phát hiện nội gián hoặc hacker dùng tài khoản hợp lệ.<br><b>Bằng chứng:</b> Log truy cập VPN, log hành vi người dùng (UEBA)."},
-  {"section": "DE - PHÁT HIỆN", "id": "DE.CM-06", "question": "Hoạt động giám sát có bao gồm việc kiểm tra sự hiện diện của mã độc (Malware) không?", "explanation": "<b>Ý nghĩa:</b> Cơ bản nhất của phát hiện.<br><b>Bằng chứng:</b> Phần mềm Antivirus/EDR đang hoạt động."},
-  {"section": "DE - PHÁT HIỆN", "id": "DE.CM-09", "question": "Các cảnh báo an ninh (Security Alerts) có được phân loại và ưu tiên xử lý không?", "explanation": "<b>Ý nghĩa:</b> Tránh bị 'ngập' trong cảnh báo giả.<br><b>Bằng chứng:</b> Quy trình Triage (phân loại) cảnh báo."},
+  // --- GV.PO: Chính sách (Policy) ---
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.PO-01",
+    "question": "Các chính sách an ninh mạng có được thiết lập, phê duyệt và ban hành không?",
+    "explanation": "<b>Ý nghĩa:</b> Thiết lập 'luật chơi' rõ ràng.<br><b>Bằng chứng:</b> Hệ thống tài liệu chính sách (ISMS) đã ban hành."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.PO-02",
+    "question": "Chính sách an ninh mạng có được truyền thông đến đúng đối tượng liên quan không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo nhân viên biết luật.<br><b>Bằng chứng:</b> Log gửi email chính sách; Cổng thông tin nội bộ."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.PO-03",
+    "question": "Chính sách an ninh mạng có được rà soát và cập nhật định kỳ không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo chính sách luôn phù hợp.<br><b>Bằng chứng:</b> Lịch sử phiên bản tài liệu; Kế hoạch rà soát hàng năm."
+  },
 
-  // === 5. RESPOND (RS - ỨNG PHÓ) ===
-  {"section": "RS - ỨNG PHÓ", "id": "RS.MA-01", "question": "Kế hoạch ứng phó sự cố (Incident Response Plan) có được thiết lập và duy trì không?", "explanation": "<b>Ý nghĩa:</b> Kịch bản sẵn sàng khi có 'biến'.<br><b>Bằng chứng:</b> Tài liệu Kế hoạch ứng phó sự cố (IRP)."},
-  {"section": "RS - ỨNG PHÓ", "id": "RS.MA-02", "question": "Các sự cố có được báo cáo kịp thời theo các tiêu chí đã quy định không?", "explanation": "<b>Ý nghĩa:</b> Biết sớm xử lý sớm.<br><b>Bằng chứng:</b> Quy trình báo cáo, các ticket sự cố."},
-  {"section": "RS - ỨNG PHÓ", "id": "RS.AN-03", "question": "Các sự cố có được phân tích để hiểu rõ nguyên nhân gốc rễ, phạm vi và tác động không?", "explanation": "<b>Ý nghĩa:</b> Hiểu rõ kẻ địch đã làm gì, vào sâu đến đâu.<br><b>Bằng chứng:</b> Báo cáo điều tra sự cố (Forensics report)."},
-  {"section": "RS - ỨNG PHÓ", "id": "RS.MI-01", "question": "Các hành động ngăn chặn (Containment) và diệt trừ (Eradication) có được thực hiện để giảm thiểu thiệt hại không?", "explanation": "<b>Ý nghĩa:</b> Cô lập máy nhiễm virus ngay lập tức.<br><b>Bằng chứng:</b> Nhật ký xử lý sự cố (ghi lại các bước đã làm)."},
-  {"section": "RS - ỨNG PHÓ", "id": "RS.CO-02", "question": "Việc thông báo sự cố cho các bên liên quan (nội bộ, khách hàng, cơ quan chức năng) có được thực hiện khi cần thiết không?", "explanation": "<b>Ý nghĩa:</b> Tuân thủ luật và giữ uy tín.<br><b>Bằng chứng:</b> Kịch bản truyền thông khi khủng hoảng."},
+  // --- GV.OV: Giám sát (Oversight) ---
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.OV-01",
+    "question": "Kết quả thực hiện chiến lược an ninh mạng có được giám sát và đo lường thông qua các chỉ số (KPI/KRI) không?",
+    "explanation": "<b>Ý nghĩa:</b> Đo lường để quản lý hiệu quả.<br><b>Bằng chứng:</b> Dashboard báo cáo KPI/Metrics ANTT."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.OV-02",
+    "question": "Việc tuân thủ chính sách và quy định có được kiểm tra định kỳ (audit nội bộ/bên ngoài) không?",
+    "explanation": "<b>Ý nghĩa:</b> Tin tưởng nhưng cần kiểm chứng.<br><b>Bằng chứng:</b> Báo cáo kiểm toán nội bộ; Chứng chỉ ISO/SOC2."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.OV-03",
+    "question": "Kết quả giám sát và kiểm tra có được sử dụng để điều chỉnh chiến lược và cải thiện không?",
+    "explanation": "<b>Ý nghĩa:</b> Phát hiện sai sót để khắc phục.<br><b>Bằng chứng:</b> Kế hoạch hành động khắc phục (CAP)."
+  },
 
-  // === 6. RECOVER (RC - PHỤC HỒI) ===
-  {"section": "RC - PHỤC HỒI", "id": "RC.RP-01", "question": "Kế hoạch phục hồi (Recovery Plan) có được thực hiện ngay sau sự cố không?", "explanation": "<b>Ý nghĩa:</b> Đưa hệ thống hoạt động trở lại nhanh nhất có thể.<br><b>Bằng chứng:</b> Quy trình kích hoạt DRP/BCP."},
-  {"section": "RC - PHỤC HỒI", "id": "RC.RP-03", "question": "Các bản sao lưu (Backup) có được sử dụng hiệu quả để khôi phục hệ thống không?", "explanation": "<b>Ý nghĩa:</b> Backup phải dùng được khi cần.<br><b>Bằng chứng:</b> Biên bản khôi phục dữ liệu thực tế."},
-  {"section": "RC - PHỤC HỒI", "id": "RC.RP-06", "question": "Tính toàn vẹn của các bản sao lưu có được kiểm tra trước khi phục hồi không?", "explanation": "<b>Ý nghĩa:</b> Tránh khôi phục lại chính con virus đã được backup.<br><b>Bằng chứng:</b> Quy trình kiểm tra malware cho bản backup."},
-  {"section": "RC - PHỤC HỒI", "id": "RC.CO-03", "question": "Các hoạt động phục hồi có được truyền thông rõ ràng đến các bên liên quan không?", "explanation": "<b>Ý nghĩa:</b> Để mọi người biết khi nào hệ thống chạy lại bình thường.<br><b>Bằng chứng:</b> Email/Thông báo trạng thái hệ thống."},
-  {"section": "RC - PHỤC HỒI", "id": "RC.CO-04", "question": "Bài học kinh nghiệm (Lessons Learned) có được rút ra sau sự cố để cải thiện chiến lược tương lai không?", "explanation": "<b>Ý nghĩa:</b> Không để vấp ngã 2 lần vì cùng 1 lỗi.<br><b>Bằng chứng:</b> Báo cáo Post-Incident Review."}
+  // --- GV.SC: Quản lý Chuỗi cung ứng (Supply Chain) ---
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.SC-01",
+    "question": "Quy trình quản lý rủi ro chuỗi cung ứng có được thiết lập, bao gồm việc xác định, đánh giá và giám sát NCC không?",
+    "explanation": "<b>Ý nghĩa:</b> Quản lý tổng thể rủi ro từ đối tác.<br><b>Bằng chứng:</b> Chính sách quản lý nhà cung cấp."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.SC-02",
+    "question": "Các yêu cầu an ninh mạng có được xác định và đưa vào hợp đồng với các nhà cung cấp không?",
+    "explanation": "<b>Ý nghĩa:</b> Ràng buộc trách nhiệm pháp lý.<br><b>Bằng chứng:</b> Điều khoản bảo mật trong Hợp đồng/NDA."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.SC-03",
+    "question": "Các nhà cung cấp có được đánh giá năng lực an ninh mạng trước khi hợp tác không?",
+    "explanation": "<b>Ý nghĩa:</b> Thẩm định kỹ càng trước khi hợp tác.<br><b>Bằng chứng:</b> Phiếu thẩm định (Due Diligence Checklist)."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.SC-04",
+    "question": "Rủi ro từ các nhà cung cấp có được giám sát và đánh giá lại định kỳ không?",
+    "explanation": "<b>Ý nghĩa:</b> Giám sát liên tục vì đối tác có thể yếu đi.<br><b>Bằng chứng:</b> Báo cáo đánh giá định kỳ NCC."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.SC-05",
+    "question": "Kế hoạch ứng phó sự cố có bao gồm các kịch bản liên quan đến nhà cung cấp không?",
+    "explanation": "<b>Ý nghĩa:</b> Sẵn sàng ứng phó khi đối tác gặp sự cố.<br><b>Bằng chứng:</b> Playbook ứng phó sự cố chuỗi cung ứng."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.SC-06",
+    "question": "Quy trình kết thúc hợp tác (Off-boarding) có đảm bảo thu hồi quyền truy cập và xử lý dữ liệu an toàn không?",
+    "explanation": "<b>Ý nghĩa:</b> Kết thúc hợp tác an toàn.<br><b>Bằng chứng:</b> Checklist thanh lý hợp đồng; Biên bản xóa dữ liệu."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.SC-07",
+    "question": "Tổ chức có yêu cầu các nhà cung cấp cấp 1 phải quản lý rủi ro an ninh mạng đối với các nhà cung cấp lại của họ không?",
+    "explanation": "<b>Ý nghĩa:</b> Quản lý rủi ro xuyên suốt chuỗi cung ứng.<br><b>Bằng chứng:</b> Điều khoản hợp đồng yêu cầu quản lý thầu phụ."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.SC-08",
+    "question": "Tổ chức có tham gia vào các hoạt động chia sẻ thông tin rủi ro chuỗi cung ứng với cộng đồng không?",
+    "explanation": "<b>Ý nghĩa:</b> Học hỏi từ cộng đồng về vendor rủi ro.<br><b>Bằng chứng:</b> Tham gia các diễn đàn ISAC."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.SC-09",
+    "question": "Tổ chức có các phương án dự phòng cho trường hợp nhà cung cấp quan trọng gặp sự cố không?",
+    "explanation": "<b>Ý nghĩa:</b> Tránh phụ thuộc hoàn toàn vào một NCC.<br><b>Bằng chứng:</b> Kế hoạch BCP với kịch bản thay thế NCC."
+  },
+  {
+    "section": "GV - QUẢN TRỊ",
+    "id": "GV.SC-10",
+    "question": "Quy trình phát triển phần mềm an toàn (SSDLC) có được áp dụng cho phần mềm tự phát triển hoặc thuê ngoài không?",
+    "explanation": "<b>Ý nghĩa:</b> Bảo mật từ khâu thiết kế.<br><b>Bằng chứng:</b> Quy trình SSDLC; Báo cáo test SAST/DAST."
+  },
+
+  // ========================================================================
+  // 2. IDENTIFY (ID - NHẬN DIỆN) - 22 Subcategories
+  // ========================================================================
+  // --- ID.AM: Quản lý Tài sản (Asset Management) ---
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.AM-01",
+    "question": "Danh mục kiểm kê các thiết bị vật lý (phần cứng) có được thiết lập, duy trì và cập nhật không?",
+    "explanation": "<b>Ý nghĩa:</b> Kiểm soát tài sản phần cứng.<br><b>Bằng chứng:</b> Hardware Asset Inventory."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.AM-02",
+    "question": "Danh mục kiểm kê phần mềm, hệ điều hành và ứng dụng có được thiết lập không?",
+    "explanation": "<b>Ý nghĩa:</b> Quản lý license, phiên bản phần mềm.<br><b>Bằng chứng:</b> Software Asset Inventory."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.AM-03",
+    "question": "Các tài sản có được phân loại dựa trên mức độ quan trọng (Criticality) đối với tổ chức không?",
+    "explanation": "<b>Ý nghĩa:</b> Ưu tiên bảo vệ tài sản quan trọng.<br><b>Bằng chứng:</b> Phân loại tài sản (High/Medium/Low)."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.AM-04",
+    "question": "Các dịch vụ bên ngoài (SaaS, PaaS, IaaS) có được kiểm kê và quản lý không?",
+    "explanation": "<b>Ý nghĩa:</b> Kiểm soát tài sản trên Cloud.<br><b>Bằng chứng:</b> Danh sách dịch vụ Cloud đang sử dụng."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.AM-05",
+    "question": "Các tài sản dữ liệu có được xác định, phân loại và định vị (biết nó nằm ở đâu) không?",
+    "explanation": "<b>Ý nghĩa:</b> Biết dữ liệu nhạy cảm ở đâu để bảo vệ.<br><b>Bằng chứng:</b> Data Map; Danh mục tài sản thông tin."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.AM-07",
+    "question": "Vòng đời của tài sản (từ mua sắm đến hủy bỏ) có được quản lý theo quy trình không?",
+    "explanation": "<b>Ý nghĩa:</b> Quản lý tài sản suốt vòng đời.<br><b>Bằng chứng:</b> Quy trình quản lý vòng đời tài sản."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.AM-08",
+    "question": "Các luồng dữ liệu (Data Flow) và quy trình xử lý dữ liệu quan trọng có được xác định và lập tài liệu (ví dụ: vẽ sơ đồ) không?",
+    "explanation": "<b>Ý nghĩa:</b> Hiểu rõ đường đi của dữ liệu.<br><b>Bằng chứng:</b> Sơ đồ DFD (Data Flow Diagram)."
+  },
+
+  // --- ID.RA: Đánh giá Rủi ro (Risk Assessment) ---
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.RA-01",
+    "question": "Các lỗ hổng bảo mật trên tài sản có được xác định, xác thực và ghi nhận không?",
+    "explanation": "<b>Ý nghĩa:</b> Chủ động tìm điểm yếu.<br><b>Bằng chứng:</b> Báo cáo quét lỗ hổng (Vulnerability Scan)."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.RA-02",
+    "question": "Thông tin tình báo mối đe dọa (Threat Intel) có được thu thập và phân tích không?",
+    "explanation": "<b>Ý nghĩa:</b> Nắm bắt xu hướng tấn công mới.<br><b>Bằng chứng:</b> Bản tin Threat Intel; Feed IOCs."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.RA-03",
+    "question": "Các mối đe dọa từ nội bộ và bên ngoài có được xác định và lập danh mục không?",
+    "explanation": "<b>Ý nghĩa:</b> Biết rõ kẻ thù tiềm năng.<br><b>Bằng chứng:</b> Danh mục mối đe dọa (Threat Catalogue)."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.RA-04",
+    "question": "Tác động tiềm ẩn và khả năng xảy ra của các rủi ro có được phân tích không?",
+    "explanation": "<b>Ý nghĩa:</b> Tính toán mức độ nghiêm trọng của rủi ro.<br><b>Bằng chứng:</b> Ma trận đánh giá rủi ro."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.RA-05",
+    "question": "Rủi ro có được sắp xếp ưu tiên dựa trên mức độ ảnh hưởng đến tổ chức không?",
+    "explanation": "<b>Ý nghĩa:</b> Ưu tiên xử lý rủi ro lớn nhất.<br><b>Bằng chứng:</b> Danh sách ưu tiên rủi ro."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.RA-06",
+    "question": "Các phương án xử lý rủi ro (Risk Responses) có được xác định và lựa chọn không?",
+    "explanation": "<b>Ý nghĩa:</b> Quyết định phương án xử lý rủi ro.<br><b>Bằng chứng:</b> Kế hoạch xử lý rủi ro (RTP)."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.RA-07",
+    "question": "Các thay đổi về rủi ro có được theo dõi và cập nhật liên tục vào hồ sơ rủi ro không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo hồ sơ rủi ro luôn cập nhật.<br><b>Bằng chứng:</b> Risk Register cập nhật thường xuyên."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.RA-08",
+    "question": "Các giả định và giới hạn của việc đánh giá rủi ro có được xác định rõ không?",
+    "explanation": "<b>Ý nghĩa:</b> Hiểu rõ phạm vi và độ tin cậy của đánh giá.<br><b>Bằng chứng:</b> Mục 'Giả định' trong báo cáo rủi ro."
+  },
+
+  // --- ID.IM: Cải tiến (Improvement) ---
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.IM-01",
+    "question": "Các kế hoạch cải tiến an ninh mạng (ví dụ: sau audit, sau sự cố) có được thiết lập và theo dõi tiến độ không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo khắc phục các vấn đề đã tìm thấy.<br><b>Bằng chứng:</b> Kế hoạch hành động khắc phục (CAP)."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.IM-02",
+    "question": "Bài học kinh nghiệm từ sự cố thực tế có được dùng để cải tiến quy trình không?",
+    "explanation": "<b>Ý nghĩa:</b> Tránh lặp lại sai lầm cũ.<br><b>Bằng chứng:</b> Báo cáo rút kinh nghiệm (Lessons Learned)."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.IM-03",
+    "question": "Quy trình quản lý vòng đời hệ thống (SDLC) có tích hợp yêu cầu bảo mật ngay từ đầu không?",
+    "explanation": "<b>Ý nghĩa:</b> Bảo mật từ thiết kế (Security by Design).<br><b>Bằng chứng:</b> Tài liệu yêu cầu bảo mật dự án."
+  },
+  {
+    "section": "ID - NHẬN DIỆN",
+    "id": "ID.IM-04",
+    "question": "Tổ chức có định kỳ đánh giá lại hiệu quả của các biện pháp kiểm soát hiện tại không?",
+    "explanation": "<b>Ý nghĩa:</b> Tối ưu hóa công cụ/quy trình đang sử dụng.<br><b>Bằng chứng:</b> Báo cáo đánh giá hiệu quả công nghệ."
+  },
+
+  // ========================================================================
+  // 3. PROTECT (PR - BẢO VỆ) - 28 Subcategories
+  // ========================================================================
+  // --- PR.AA: Kiểm soát Truy cập & Xác thực ---
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AA-01",
+    "question": "Danh tính và thông tin xác thực người dùng có được quản lý tập trung và bảo vệ không?",
+    "explanation": "<b>Ý nghĩa:</b> Quản lý danh tính người dùng hiệu quả.<br><b>Bằng chứng:</b> Hệ thống IAM/AD; Chính sách mật khẩu."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AA-02",
+    "question": "Truy cập vật lý vào các khu vực nhạy cảm có được kiểm soát và giám sát không?",
+    "explanation": "<b>Ý nghĩa:</b> Ngăn chặn tiếp cận vật lý trái phép.<br><b>Bằng chứng:</b> Log cửa từ, camera DC."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AA-03",
+    "question": "Truy cập từ xa (Remote Access) có được quản lý chặt chẽ và bảo vệ (VPN, MFA) không?",
+    "explanation": "<b>Ý nghĩa:</b> Bảo mật làm việc từ xa.<br><b>Bằng chứng:</b> Cấu hình VPN; Log truy cập từ xa."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AA-04",
+    "question": "Quyền truy cập có tuân theo nguyên tắc đặc quyền tối thiểu và phân tách nhiệm vụ không?",
+    "explanation": "<b>Ý nghĩa:</b> Cấp quyền vừa đủ.<br><b>Bằng chứng:</b> Ma trận phân quyền (Access Matrix)."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AA-05",
+    "question": "Quyền truy cập có được rà soát định kỳ và thu hồi ngay khi không cần thiết không?",
+    "explanation": "<b>Ý nghĩa:</b> Loại bỏ tài khoản thừa.<br><b>Bằng chứng:</b> Biên bản rà soát quyền (Access Review)."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AA-06",
+    "question": "Xác thực đa yếu tố (MFA) có được áp dụng cho các truy cập quan trọng không?",
+    "explanation": "<b>Ý nghĩa:</b> Tăng cường bảo mật xác thực.<br><b>Bằng chứng:</b> Cấu hình MFA."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AA-07",
+    "question": "Người dùng có được xác minh danh tính kỹ càng trước khi cấp quyền truy cập không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo cấp quyền đúng người.<br><b>Bằng chứng:</b> Quy trình onboarding nhân sự."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AA-08",
+    "question": "Phiên làm việc (Session) của người dùng có được quản lý an toàn (timeout, logout) không?",
+    "explanation": "<b>Ý nghĩa:</b> Tránh bị chiếm phiên làm việc.<br><b>Bằng chứng:</b> Cấu hình Session Timeout."
+  },
+
+  // --- PR.AT: Nhận thức và Đào tạo ---
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AT-01",
+    "question": "Tất cả nhân viên có được đào tạo nhận thức an ninh mạng định kỳ không?",
+    "explanation": "<b>Ý nghĩa:</b> Nâng cao nhận thức bảo mật chung.<br><b>Bằng chứng:</b> Hồ sơ đào tạo; Kết quả test."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AT-02",
+    "question": "Nhân sự có vai trò đặc biệt có được đào tạo chuyên sâu phù hợp không?",
+    "explanation": "<b>Ý nghĩa:</b> Đào tạo chuyên sâu cho vị trí rủi ro cao.<br><b>Bằng chứng:</b> Chứng chỉ đào tạo chuyên môn."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AT-03",
+    "question": "Lãnh đạo cấp cao có được cập nhật thông tin về rủi ro an ninh mạng không?",
+    "explanation": "<b>Ý nghĩa:</b> Giúp lãnh đạo hiểu để ra quyết định.<br><b>Bằng chứng:</b> Nội dung briefing cho lãnh đạo."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AT-04",
+    "question": "Bên thứ ba (nhà thầu, đối tác) có được yêu cầu đào tạo nhận thức an ninh mạng không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo đối tác có nhận thức bảo mật.<br><b>Bằng chứng:</b> Yêu cầu đào tạo trong hợp đồng."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.AT-05",
+    "question": "Hiệu quả của chương trình đào tạo có được đánh giá (ví dụ: qua diễn tập Phishing) không?",
+    "explanation": "<b>Ý nghĩa:</b> Kiểm tra hiệu quả đào tạo.<br><b>Bằng chứng:</b> Kết quả Phishing Test."
+  },
+
+  // --- PR.DS: An ninh Dữ liệu ---
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.DS-01",
+    "question": "Dữ liệu lưu trữ (Data-at-rest) có được bảo vệ (ví dụ: mã hóa) không?",
+    "explanation": "<b>Ý nghĩa:</b> Bảo vệ dữ liệu khi lưu trữ.<br><b>Bằng chứng:</b> Cấu hình Bitlocker, TDE."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.DS-02",
+    "question": "Dữ liệu truyền tải (Data-in-transit) có được bảo vệ (ví dụ: mã hóa TLS/VPN) không?",
+    "explanation": "<b>Ý nghĩa:</b> Bảo vệ dữ liệu khi truyền tải.<br><b>Bằng chứng:</b> Cấu hình HTTPS, VPN."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.DS-09",
+    "question": "Tài sản dữ liệu có được quản lý trong suốt vòng đời (tạo, dùng, lưu, hủy) không?",
+    "explanation": "<b>Ý nghĩa:</b> Quản lý vòng đời dữ liệu.<br><b>Bằng chứng:</b> Quy trình hủy dữ liệu an toàn."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.DS-10",
+    "question": "Tính toàn vẹn của dữ liệu có được đảm bảo (ví dụ: dùng hash, chữ ký số) không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo dữ liệu không bị sửa đổi trái phép.<br><b>Bằng chứng:</b> Sử dụng FIM (File Integrity Monitoring)."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.DS-11",
+    "question": "Dữ liệu có được sao lưu (Backup) và kiểm tra phục hồi định kỳ không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo khả năng khôi phục dữ liệu.<br><b>Bằng chứng:</b> Log backup; Biên bản test restore."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.DS-12",
+    "question": "Các biện pháp chống rò rỉ dữ liệu (DLP) có được triển khai không?",
+    "explanation": "<b>Ý nghĩa:</b> Ngăn chặn rò rỉ dữ liệu nhạy cảm.<br><b>Bằng chứng:</b> Cấu hình hệ thống DLP."
+  },
+
+  // --- PR.PS: An ninh Nền tảng ---
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.PS-01",
+    "question": "Cấu hình an toàn (Hardening) có được thiết lập và áp dụng cho các hệ thống không?",
+    "explanation": "<b>Ý nghĩa:</b> Áp dụng cấu hình bảo mật chuẩn.<br><b>Bằng chứng:</b> Hardening checklist; Kết quả scan cấu hình."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.PS-02",
+    "question": "Phần mềm cài đặt trên hệ thống có được kiểm soát (ví dụ: Whitelisting) không?",
+    "explanation": "<b>Ý nghĩa:</b> Kiểm soát phần mềm được phép chạy.<br><b>Bằng chứng:</b> Cấu hình AppLocker."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.PS-03",
+    "question": "Quản lý bản vá (Patching) có được thực hiện kịp thời và tự động hóa không?",
+    "explanation": "<b>Ý nghĩa:</b> Vá lỗ hổng bảo mật kịp thời.<br><b>Bằng chứng:</b> Báo cáo tình trạng bản vá."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.PS-04",
+    "question": "Nhật ký hệ thống (Logs) có được ghi lại đầy đủ và bảo vệ tập trung không?",
+    "explanation": "<b>Ý nghĩa:</b> Ghi log phục vụ điều tra, giám sát.<br><b>Bằng chứng:</b> Hệ thống Log tập trung (SIEM)."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.PS-05",
+    "question": "Các thiết bị lưu trữ di động (USB) có được kiểm soát chặt chẽ không?",
+    "explanation": "<b>Ý nghĩa:</b> Ngăn chặn nguy cơ từ thiết bị ngoại vi.<br><b>Bằng chứng:</b> Chính sách chặn USB."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.PS-06",
+    "question": "Việc thay đổi cấu hình hệ thống có được quản lý theo quy trình (Change Management) không?",
+    "explanation": "<b>Ý nghĩa:</b> Kiểm soát thay đổi hệ thống.<br><b>Bằng chứng:</b> Ticket Change Request (CR)."
+  },
+
+  // --- PR.IR: Khả năng phục hồi hạ tầng ---
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.IR-01",
+    "question": "Mạng lưới có được phân đoạn (Network Segmentation) để cô lập các vùng quan trọng không?",
+    "explanation": "<b>Ý nghĩa:</b> Ngăn chặn tấn công lan rộng.<br><b>Bằng chứng:</b> Sơ đồ VLAN/Zone; Firewall rules."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.IR-02",
+    "question": "Các cơ chế dự phòng (HA) có được triển khai cho các hệ thống quan trọng không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo tính sẵn sàng của hệ thống.<br><b>Bằng chứng:</b> Cấu hình Cluster, Load Balancing."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.IR-03",
+    "question": "Khả năng chịu tải và hiệu năng của hệ thống có được giám sát và quản lý không?",
+    "explanation": "<b>Ý nghĩa:</b> Tránh quá tải hệ thống.<br><b>Bằng chứng:</b> Báo cáo Capacity Planning."
+  },
+  {
+    "section": "PR - BẢO VỆ",
+    "id": "PR.IR-04",
+    "question": "Hạ tầng vật lý (điện, lạnh, PCCC) hỗ trợ hệ thống có được đảm bảo dự phòng không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo môi trường hoạt động ổn định.<br><b>Bằng chứng:</b> Hợp đồng bảo trì UPS, máy phát điện."
+  },
+
+  // ========================================================================
+  // 4. DETECT (DE - PHÁT HIỆN) - 11 Subcategories
+  // ========================================================================
+  // --- DE.CM: Giám sát Liên tục ---
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.CM-01",
+    "question": "Mạng lưới và môi trường vật lý có được giám sát liên tục 24/7 để phát hiện sự kiện an ninh không?",
+    "explanation": "<b>Ý nghĩa:</b> Giám sát liên tục để phát hiện sớm.<br><b>Bằng chứng:</b> Màn hình SOC; Hợp đồng MSSP 24/7."
+  },
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.CM-02",
+    "question": "Môi trường vật lý có được giám sát để phát hiện truy cập trái phép không?",
+    "explanation": "<b>Ý nghĩa:</b> Phát hiện đột nhập vật lý.<br><b>Bằng chứng:</b> Log camera, hệ thống báo động."
+  },
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.CM-03",
+    "question": "Hoạt động của nhân sự và các tài khoản có được giám sát để phát hiện hành vi bất thường không?",
+    "explanation": "<b>Ý nghĩa:</b> Phát hiện hành vi người dùng đáng ngờ.<br><b>Bằng chứng:</b> Cảnh báo UEBA trên SIEM."
+  },
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.CM-06",
+    "question": "Các dịch vụ giám sát an ninh bên ngoài (ví dụ: MSSP) có được sử dụng để bổ sung năng lực không?",
+    "explanation": "<b>Ý nghĩa:</b> Bổ sung năng lực giám sát chuyên sâu.<br><b>Bằng chứng:</b> Hợp đồng dịch vụ SOC/MSSP."
+  },
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.CM-09",
+    "question": "Hệ thống giám sát có khả năng phát hiện mã độc và các cuộc tấn công mạng phổ biến không?",
+    "explanation": "<b>Ý nghĩa:</b> Năng lực phát hiện cơ bản.<br><b>Bằng chứng:</b> Cảnh báo từ Antivirus, IDS/IPS, WAF."
+  },
+
+  // --- DE.AE: Phân tích Sự kiện ---
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.AE-02",
+    "question": "Các sự kiện từ nhiều nguồn có được phân tích tương quan (Correlation) để xác định sự cố không?",
+    "explanation": "<b>Ý nghĩa:</b> Phân tích tương quan để phát hiện sự cố phức tạp.<br><b>Bằng chứng:</b> Correlation Rules trên SIEM."
+  },
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.AE-03",
+    "question": "Thông tin Threat Intel có được tích hợp tự động vào hệ thống giám sát không?",
+    "explanation": "<b>Ý nghĩa:</b> Sử dụng Threat Intel để nâng cao khả năng phát hiện.<br><b>Bằng chứng:</b> Tích hợp TI feed vào SIEM."
+  },
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.AE-04",
+    "question": "Đường cơ sở (Baseline) hoạt động bình thường có được thiết lập để phát hiện bất thường không?",
+    "explanation": "<b>Ý nghĩa:</b> Phát hiện bất thường dựa trên baseline.<br><b>Bằng chứng:</b> Tài liệu Baseline hoạt động hệ thống."
+  },
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.AE-06",
+    "question": "Các hoạt động săn tìm mối đe dọa (Threat Hunting) chủ động có được thực hiện định kỳ không?",
+    "explanation": "<b>Ý nghĩa:</b> Chủ động tìm kiếm mối đe dọa ẩn mình.<br><b>Bằng chứng:</b> Báo cáo Threat Hunting."
+  },
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.AE-07",
+    "question": "Dữ liệu sự kiện có được tổng hợp và chuẩn hóa từ nhiều nguồn để phục vụ phân tích không?",
+    "explanation": "<b>Ý nghĩa:</b> Chuẩn hóa log để dễ dàng phân tích.<br><b>Bằng chứng:</b> Hệ thống Log Management tập trung."
+  },
+  {
+    "section": "DE - PHÁT HIỆN",
+    "id": "DE.AE-08",
+    "question": "Các cảnh báo an ninh có được phân loại và ưu tiên xử lý (Triage) không?",
+    "explanation": "<b>Ý nghĩa:</b> Ưu tiên xử lý cảnh báo quan trọng.<br><b>Bằng chứng:</b> Quy trình Triage cảnh báo."
+  },
+
+  // ========================================================================
+  // 5. RESPOND (RS - ỨNG PHÓ) - 13 Subcategories
+  // ========================================================================
+  // --- RS.MA: Quản lý Sự cố ---
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.MA-01",
+    "question": "Kế hoạch ứng phó sự cố (IRP) có được thiết lập, phê duyệt và duy trì cập nhật không?",
+    "explanation": "<b>Ý nghĩa:</b> Sẵn sàng kế hoạch ứng phó.<br><b>Bằng chứng:</b> Tài liệu IRP."
+  },
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.MA-02",
+    "question": "Quy trình báo cáo sự cố có được quy định rõ ràng và áp dụng cho toàn thể nhân viên không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo thông báo sự cố kịp thời.<br><b>Bằng chứng:</b> Sơ đồ Call Tree; Kênh báo cáo sự cố."
+  },
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.MA-03",
+    "question": "Đội ứng phó sự cố (CSIRT) có được thành lập với vai trò rõ ràng và được đào tạo không?",
+    "explanation": "<b>Ý nghĩa:</b> Có đội ngũ chuyên trách ứng phó.<br><b>Bằng chứng:</b> Quyết định thành lập CSIRT."
+  },
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.MA-04",
+    "question": "Các công cụ và tài nguyên cần thiết cho việc ứng phó sự cố có luôn sẵn sàng không?",
+    "explanation": "<b>Ý nghĩa:</b> Sẵn sàng công cụ ứng cứu.<br><b>Bằng chứng:</b> Danh sách IR Toolkit."
+  },
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.MA-05",
+    "question": "Các tiêu chí để phân loại mức độ nghiêm trọng của sự cố có được thiết lập rõ ràng không?",
+    "explanation": "<b>Ý nghĩa:</b> Phân loại mức độ sự cố để xử lý phù hợp.<br><b>Bằng chứng:</b> Bảng phân cấp sự cố."
+  },
+
+  // --- RS.AN: Phân tích Sự cố ---
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.AN-03",
+    "question": "Các sự cố có được phân tích để xác định nguyên nhân gốc rễ và phạm vi ảnh hưởng không?",
+    "explanation": "<b>Ý nghĩa:</b> Hiểu rõ nguyên nhân và tác động của sự cố.<br><b>Bằng chứng:</b> Báo cáo điều tra sự cố."
+  },
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.AN-06",
+    "question": "Các hành động trong quá trình xử lý sự cố có được ghi nhật ký đầy đủ không?",
+    "explanation": "<b>Ý nghĩa:</b> Ghi lại diễn biến xử lý sự cố.<br><b>Bằng chứng:</b> Nhật ký sự cố (Incident Timeline)."
+  },
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.AN-07",
+    "question": "Bằng chứng số liên quan đến sự cố có được thu thập và bảo quản đúng quy trình pháp lý không?",
+    "explanation": "<b>Ý nghĩa:</b> Bảo vệ tính pháp lý của bằng chứng.<br><b>Bằng chứng:</b> Biên bản Chain of Custody."
+  },
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.AN-08",
+    "question": "Các sự cố có được phân loại theo danh mục chung để phục vụ thống kê và báo cáo không?",
+    "explanation": "<b>Ý nghĩa:</b> Thống kê, phân tích xu hướng sự cố.<br><b>Bằng chứng:</b> Danh mục phân loại sự cố."
+  },
+
+  // --- RS.MI: Giảm thiểu Sự cố ---
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.MI-01",
+    "question": "Các biện pháp ngăn chặn và diệt trừ có được thực hiện kịp thời để ngăn sự cố lan rộng không?",
+    "explanation": "<b>Ý nghĩa:</b> Cô lập và loại bỏ mối đe dọa.<br><b>Bằng chứng:</b> Log ngăn chặn trên Firewall/EDR."
+  },
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.MI-02",
+    "question": "Các lỗ hổng mới phát hiện từ sự cố có được khắc phục ngay lập tức không?",
+    "explanation": "<b>Ý nghĩa:</b> Khắc phục ngay lỗ hổng vừa bị khai thác.<br><b>Bằng chứng:</b> Ticket vá lỗi khẩn cấp."
+  },
+
+  // --- RS.CO: Truyền thông Sự cố ---
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.CO-02",
+    "question": "Việc thông báo sự cố cho các bên liên quan có được thực hiện đúng quy định không?",
+    "explanation": "<b>Ý nghĩa:</b> Thông báo sự cố đúng quy trình.<br><b>Bằng chứng:</b> Mẫu thông báo sự cố."
+  },
+  {
+    "section": "RS - ỨNG PHÓ",
+    "id": "RS.CO-03",
+    "question": "Thông tin chia sẻ về sự cố ra bên ngoài có được kiểm soát nội dung chặt chẽ không?",
+    "explanation": "<b>Ý nghĩa:</b> Kiểm soát phát ngôn về sự cố.<br><b>Bằng chứng:</b> Quy trình phát ngôn."
+  },
+
+  // ========================================================================
+  // 6. RECOVER (RC - PHỤC HỒI) - 5 Subcategories
+  // ========================================================================
+  // --- RC.RP: Lập kế hoạch Phục hồi ---
+  {
+    "section": "RC - PHỤC HỒI",
+    "id": "RC.RP-01",
+    "question": "Kế hoạch phục hồi (Recovery Plan) có được thiết lập và sẵn sàng kích hoạt khi cần không?",
+    "explanation": "<b>Ý nghĩa:</b> Sẵn sàng kế hoạch khôi phục hoạt động.<br><b>Bằng chứng:</b> Tài liệu DRP/BCP."
+  },
+  {
+    "section": "RC - PHỤC HỒI",
+    "id": "RC.RP-02",
+    "question": "Thứ tự ưu tiên phục hồi cho các hệ thống quan trọng có được xác định rõ ràng không?",
+    "explanation": "<b>Ý nghĩa:</b> Ưu tiên phục hồi hệ thống quan trọng trước.<br><b>Bằng chứng:</b> Danh sách ưu tiên phục hồi (RTO/RPO)."
+  },
+  {
+    "section": "RC - PHỤC HỒI",
+    "id": "RC.RP-03",
+    "question": "Các bản sao lưu và cơ sở hạ tầng dự phòng có được sử dụng hiệu quả để phục hồi hoạt động không?",
+    "explanation": "<b>Ý nghĩa:</b> Sử dụng backup/DR site để phục hồi.<br><b>Bằng chứng:</b> Biên bản kích hoạt DRP."
+  },
+  {
+    "section": "RC - PHỤC HỒI",
+    "id": "RC.RP-04",
+    "question": "Hệ thống sau phục hồi có được kiểm tra, xác nhận an toàn trước khi đưa vào vận hành lại không?",
+    "explanation": "<b>Ý nghĩa:</b> Đảm bảo hệ thống sạch trước khi chạy lại.<br><b>Bằng chứng:</b> Checklist kiểm tra sau phục hồi."
+  },
+  {
+    "section": "RC - PHỤC HỒI",
+    "id": "RC.RP-05",
+    "question": "Các bài học kinh nghiệm từ quá trình phục hồi có được ghi nhận để cải tiến kế hoạch không?",
+    "explanation": "<b>Ý nghĩa:</b> Rút kinh nghiệm để phục hồi tốt hơn lần sau.<br><b>Bằng chứng:</b> Báo cáo rút kinh nghiệm phục hồi."
+  },
+
+  // --- RC.CO: Truyền thông Phục hồi ---
+  {
+    "section": "RC - PHỤC HỒI",
+    "id": "RC.CO-03",
+    "question": "Các hoạt động truyền thông phục hồi uy tín và thương hiệu sau sự cố có được thực hiện không?",
+    "explanation": "<b>Ý nghĩa:</b> Khôi phục niềm tin sau sự cố.<br><b>Bằng chứng:</b> Chiến dịch truyền thông phục hồi thương hiệu."
+  }
 ];
-
 let currentQuestionIndex = 0, clientName = "", auditResults = [], isDirty = false, sections = [];
 const els = {
     clientNameInput: document.getElementById('clientName'), startButton: document.getElementById('startButton'),
